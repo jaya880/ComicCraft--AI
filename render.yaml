@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: comiccraft-ai
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: HF_API_KEY
+        sync: false
+      - key: GEMINI_FLASH_MODEL
+        value: gemini-1.5-flash
+      - key: GEMINI_PRO_MODEL
+        value: gemini-1.5-pro
+      - key: HF_IMAGE_MODEL
+        value: runwayml/stable-diffusion-v1-5
