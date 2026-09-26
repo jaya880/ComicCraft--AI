@@ -1,17 +1,1805 @@
-<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<!doctype html>
+<html lang="en">
+
+<head>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
 <title>ComicCraft — AI Comic Story Creator</title>
+
 <style>
-:root{--p:#6d4aff;--c:#00a9c7;--ink:#101828;--mut:#667085;--line:#e4e7ec}*{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,Arial;color:var(--ink);background:#f7f8fc}
-.nav{height:72px;background:#fff;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;padding:0 5vw}.logo{font-weight:900;font-size:20px}.mark{display:inline-grid;place-items:center;width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,var(--p),var(--c));color:#fff;margin-right:8px}
-.hero{padding:70px 5vw 45px;background:radial-gradient(circle at 12% 20%,#e7ddff,transparent 28%),radial-gradient(circle at 90% 10%,#d8f7ff,transparent 30%),#fff}.hi{max-width:1180px;margin:auto;display:grid;grid-template-columns:1.15fr .85fr;gap:40px;align-items:center}.badge{display:inline-block;padding:8px 12px;border-radius:999px;background:#f1edff;color:#5b3bd1;font-size:13px;font-weight:800}h1{font-size:clamp(42px,6vw,76px);line-height:.98;letter-spacing:-4px;margin:18px 0}.hero p{font-size:18px;line-height:1.7;color:var(--mut);max-width:650px}
-.book{background:#101828;padding:14px;border-radius:25px;transform:rotate(3deg);box-shadow:0 30px 70px #10182830}.page{background:#fff;border-radius:17px;padding:12px;display:grid;grid-template-columns:1fr 1fr;gap:9px}.cell{height:130px;border:3px solid #101828;border-radius:10px;background:linear-gradient(135deg,#b9ebff,#e6d7ff)}.big{grid-column:1/-1}
-.wrap{max-width:1180px;margin:auto;padding:35px 5vw 70px}.card{background:#fff;border:1px solid var(--line);border-radius:25px;padding:30px;box-shadow:0 15px 45px #10182808}.sub{color:var(--mut)}.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.full{grid-column:1/-1}label{display:block;font-size:12px;font-weight:900;margin-bottom:8px;letter-spacing:.5px}input,select,textarea{width:100%;padding:14px;border:1px solid #d8dce5;border-radius:13px;font:inherit}textarea{min-height:135px}.actions{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-top:5px}button{border:0;border-radius:13px;padding:15px 23px;background:linear-gradient(135deg,var(--p),#8b5cf6);color:#fff;font-weight:900;cursor:pointer}.features{display:grid;grid-template-columns:repeat(3,1fr);gap:15px;margin-top:18px}.f{background:#fff;border:1px solid var(--line);border-radius:18px;padding:20px}.f span{color:var(--mut);font-size:13px}@media(max-width:850px){.hi{grid-template-columns:1fr}.grid{grid-template-columns:1fr}.full{grid-column:auto}.features{grid-template-columns:1fr}h1{letter-spacing:-2px}}
-</style></head><body>
-<nav class="nav"><div class="logo"><span class="mark">✦</span>ComicCraft</div><div style="color:#667085;font-size:13px">AI Comic Story Creator • Gemini Models</div></nav>
-<section class="hero"><div class="hi"><div><span class="badge">✦ Generative AI • 5-panel workflow</span><h1>Your idea.<br><span style="background:linear-gradient(90deg,#6d4aff,#00a9c7);-webkit-background-clip:text;color:transparent">Your comic.</span></h1><p>Transform a simple story idea into a personalized comic with AI story beats, narration, dialogue, illustrations, live preview and PDF export.</p></div><div class="book"><div class="page"><div class="cell"></div><div class="cell"></div><div class="cell big"></div></div></div></div></section>
-<main class="wrap"><section class="card"><h2>Create your comic</h2><p class="sub">Give the AI your creative direction. ComicCraft builds the story panel by panel.</p>
-<form method="post" action="/generate"><div class="grid"><div class="full"><label>STORY PROMPT</label><textarea name="prompt" required placeholder="A brave explorer discovers a glowing library hidden inside an enchanted forest..."></textarea></div>
-<div><label>MAIN CHARACTER</label><input name="character_name" value="Alex" required></div><div><label>SETTING</label><select name="setting"><option>enchanted forest</option><option>school campus</option><option>futuristic city</option><option>outer space</option><option>village</option></select></div>
-<div><label>TONE</label><select name="tone"><option>funny</option><option>light-hearted</option><option>dramatic</option><option>adventurous</option></select></div><div><label>ART STYLE</label><select name="art_style"><option>comic book</option><option>anime</option><option>cinematic</option><option>pixel art</option><option>storybook illustration</option></select></div>
-<div class="full actions"><span style="font-size:12px;color:#667085">Gemini → story • Diffusion → art • FPDF → PDF</span><button>✨ Generate Comic</button></div></div></form></section>
-<section class="features"><div class="f">🧠 <b>AI Story Engine</b><br><span>Structured outline, narration and dialogue.</span></div><div class="f">🎨 <b>Comic Art</b><br><span>AI illustrations with local demo fallback.</span></div><div class="f">📄 <b>PDF Export</b><br><span>Preview and download your comic.</span></div></section></main></body></html>
+
+/* =========================================================
+   ROOT
+========================================================= */
+
+:root{
+    --p:#6d4aff;
+    --c:#00a9c7;
+    --ink:#101828;
+    --mut:#667085;
+    --line:#e4e7ec;
+    --white:#ffffff;
+}
+
+
+/* =========================================================
+   GLOBAL
+========================================================= */
+
+*{
+    box-sizing:border-box;
+}
+
+html{
+    scroll-behavior:smooth;
+}
+
+body{
+    margin:0;
+    font-family:Inter,system-ui,Arial,sans-serif;
+    color:var(--ink);
+    background:#f7f8fc;
+    animation:pageEnter .7s ease-out;
+}
+
+@keyframes pageEnter{
+
+    from{
+        opacity:0;
+    }
+
+    to{
+        opacity:1;
+    }
+
+}
+
+
+/* =========================================================
+   NAVBAR
+========================================================= */
+
+.nav{
+
+    height:72px;
+
+    background:#fff;
+
+    border-bottom:1px solid var(--line);
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    padding:0 5vw;
+
+}
+
+.logo{
+
+    font-weight:900;
+
+    font-size:20px;
+
+    display:flex;
+
+    align-items:center;
+
+}
+
+.mark{
+
+    display:inline-grid;
+
+    place-items:center;
+
+    width:38px;
+
+    height:38px;
+
+    border-radius:12px;
+
+    background:linear-gradient(
+        135deg,
+        var(--p),
+        var(--c)
+    );
+
+    color:#fff;
+
+    margin-right:8px;
+
+    box-shadow:
+        0 8px 25px rgba(109,74,255,.25);
+
+    animation:logoPulse 3s ease-in-out infinite;
+
+}
+
+@keyframes logoPulse{
+
+    0%,100%{
+        transform:scale(1);
+    }
+
+    50%{
+        transform:scale(1.06);
+    }
+
+}
+
+
+/* =========================================================
+   HERO
+========================================================= */
+
+.hero{
+
+    padding:70px 5vw 45px;
+
+    background:
+
+        radial-gradient(
+            circle at 12% 20%,
+            #e7ddff,
+            transparent 28%
+        ),
+
+        radial-gradient(
+            circle at 90% 10%,
+            #d8f7ff,
+            transparent 30%
+        ),
+
+        #fff;
+
+    overflow:hidden;
+
+}
+
+.hi{
+
+    max-width:1180px;
+
+    margin:auto;
+
+    display:grid;
+
+    grid-template-columns:
+        1.15fr .85fr;
+
+    gap:40px;
+
+    align-items:center;
+
+}
+
+.badge{
+
+    display:inline-block;
+
+    padding:8px 12px;
+
+    border-radius:999px;
+
+    background:#f1edff;
+
+    color:#5b3bd1;
+
+    font-size:13px;
+
+    font-weight:800;
+
+    animation:
+        badgeEnter .8s ease-out;
+
+}
+
+@keyframes badgeEnter{
+
+    from{
+        opacity:0;
+        transform:translateY(15px);
+    }
+
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+
+}
+
+h1{
+
+    font-size:
+        clamp(
+            42px,
+            6vw,
+            76px
+        );
+
+    line-height:.98;
+
+    letter-spacing:-4px;
+
+    margin:18px 0;
+
+    animation:
+        titleEnter .9s ease-out;
+
+}
+
+@keyframes titleEnter{
+
+    from{
+        opacity:0;
+        transform:translateY(25px);
+    }
+
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+
+}
+
+.hero p{
+
+    font-size:18px;
+
+    line-height:1.7;
+
+    color:var(--mut);
+
+    max-width:650px;
+
+    animation:
+        paragraphEnter 1s ease-out;
+
+}
+
+@keyframes paragraphEnter{
+
+    from{
+        opacity:0;
+        transform:translateY(15px);
+    }
+
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+
+}
+
+
+/* =========================================================
+   COMIC BOOK HERO
+========================================================= */
+
+.book{
+
+    background:#101828;
+
+    padding:14px;
+
+    border-radius:25px;
+
+    transform:rotate(3deg);
+
+    box-shadow:
+        0 30px 70px #10182830;
+
+    animation:
+        comicFloat 5s ease-in-out infinite;
+
+    transition:
+        transform .4s ease,
+        box-shadow .4s ease;
+
+}
+
+.book:hover{
+
+    transform:
+        rotate(0deg)
+        scale(1.03);
+
+    box-shadow:
+        0 35px 90px #10182845;
+
+}
+
+@keyframes comicFloat{
+
+    0%,100%{
+        transform:
+            translateY(0)
+            rotate(3deg);
+    }
+
+    50%{
+        transform:
+            translateY(-12px)
+            rotate(2deg);
+    }
+
+}
+
+.page{
+
+    background:#fff;
+
+    border-radius:17px;
+
+    padding:12px;
+
+    display:grid;
+
+    grid-template-columns:
+        1fr 1fr;
+
+    gap:9px;
+
+}
+
+.cell{
+
+    height:130px;
+
+    border:3px solid #101828;
+
+    border-radius:10px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #b9ebff,
+            #e6d7ff
+        );
+
+    position:relative;
+
+    overflow:hidden;
+
+}
+
+.cell::after{
+
+    content:"";
+
+    position:absolute;
+
+    inset:-100%;
+
+    background:
+        linear-gradient(
+            120deg,
+            transparent,
+            rgba(255,255,255,.55),
+            transparent
+        );
+
+    transform:translateX(-100%);
+
+    animation:
+        shine 4s infinite;
+
+}
+
+@keyframes shine{
+
+    0%{
+        transform:translateX(-100%);
+    }
+
+    45%,100%{
+        transform:translateX(100%);
+    }
+
+}
+
+.big{
+
+    grid-column:
+        1/-1;
+
+}
+
+
+/* =========================================================
+   MAIN WRAPPER
+========================================================= */
+
+.wrap{
+
+    max-width:1180px;
+
+    margin:auto;
+
+    padding:
+        35px 5vw 70px;
+
+}
+
+
+/* =========================================================
+   MAIN CARD
+========================================================= */
+
+.card{
+
+    background:#fff;
+
+    border:1px solid var(--line);
+
+    border-radius:25px;
+
+    padding:30px;
+
+    box-shadow:
+        0 15px 45px #10182808;
+
+    transition:
+        transform .35s ease,
+        box-shadow .35s ease;
+
+}
+
+.card:hover{
+
+    transform:
+        translateY(-3px);
+
+    box-shadow:
+        0 22px 55px #10182812;
+
+}
+
+.sub{
+
+    color:var(--mut);
+
+}
+
+.grid{
+
+    display:grid;
+
+    grid-template-columns:
+        1fr 1fr;
+
+    gap:18px;
+
+}
+
+.full{
+
+    grid-column:
+        1/-1;
+
+}
+
+label{
+
+    display:block;
+
+    font-size:12px;
+
+    font-weight:900;
+
+    margin-bottom:8px;
+
+    letter-spacing:.5px;
+
+}
+
+
+/* =========================================================
+   INPUTS
+========================================================= */
+
+input,
+select,
+textarea{
+
+    width:100%;
+
+    padding:14px;
+
+    border:
+        1px solid #d8dce5;
+
+    border-radius:13px;
+
+    font:inherit;
+
+    background:#fff;
+
+    transition:
+        border-color .25s ease,
+        box-shadow .25s ease,
+        transform .2s ease;
+
+}
+
+textarea{
+
+    min-height:135px;
+
+    resize:vertical;
+
+}
+
+input:focus,
+select:focus,
+textarea:focus{
+
+    outline:none;
+
+    border-color:
+        var(--p);
+
+    transform:
+        translateY(-1px);
+
+    box-shadow:
+        0 0 0 4px
+        rgba(109,74,255,.10),
+
+        0 8px 25px
+        rgba(109,74,255,.08);
+
+}
+
+
+/* =========================================================
+   ACTIONS
+========================================================= */
+
+.actions{
+
+    display:flex;
+
+    justify-content:
+        space-between;
+
+    align-items:center;
+
+    gap:15px;
+
+    margin-top:5px;
+
+}
+
+
+/* =========================================================
+   GENERATE BUTTON
+========================================================= */
+
+.generate-btn{
+
+    border:0;
+
+    border-radius:13px;
+
+    padding:
+        15px 23px;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--p),
+            #8b5cf6
+        );
+
+    color:#fff;
+
+    font-weight:900;
+
+    cursor:pointer;
+
+    position:relative;
+
+    overflow:hidden;
+
+    box-shadow:
+        0 10px 25px
+        rgba(109,74,255,.20);
+
+    transition:
+        transform .2s ease,
+        box-shadow .25s ease;
+
+}
+
+.generate-btn::before{
+
+    content:"";
+
+    position:absolute;
+
+    top:0;
+
+    left:-120%;
+
+    width:80%;
+
+    height:100%;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            rgba(255,255,255,.35),
+            transparent
+        );
+
+    transform:
+        skewX(-20deg);
+
+}
+
+.generate-btn:hover{
+
+    transform:
+        translateY(-3px);
+
+    box-shadow:
+        0 15px 35px
+        rgba(109,74,255,.30);
+
+}
+
+.generate-btn:hover::before{
+
+    animation:
+        buttonShine .7s ease;
+
+}
+
+@keyframes buttonShine{
+
+    from{
+        left:-120%;
+    }
+
+    to{
+        left:140%;
+    }
+
+}
+
+.generate-btn:active{
+
+    transform:
+        scale(.97);
+
+}
+
+.generate-btn:disabled{
+
+    opacity:.75;
+
+    cursor:
+        not-allowed;
+
+}
+
+
+/* =========================================================
+   FEATURE CARDS
+========================================================= */
+
+.features{
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(3,1fr);
+
+    gap:15px;
+
+    margin-top:18px;
+
+}
+
+.f{
+
+    background:#fff;
+
+    border:
+        1px solid var(--line);
+
+    border-radius:18px;
+
+    padding:20px;
+
+    transition:
+        transform .3s ease,
+        box-shadow .3s ease,
+        border-color .3s ease;
+
+}
+
+.f:hover{
+
+    transform:
+        translateY(-6px);
+
+    border-color:
+        rgba(109,74,255,.25);
+
+    box-shadow:
+        0 15px 35px
+        rgba(16,24,40,.08);
+
+}
+
+.f span{
+
+    color:var(--mut);
+
+    font-size:13px;
+
+}
+
+
+/* =========================================================
+   AI GENERATION OVERLAY
+========================================================= */
+
+.comic-loading-overlay{
+
+    position:fixed;
+
+    inset:0;
+
+    z-index:99999;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    background:
+        radial-gradient(
+            circle at center,
+            rgba(80,70,180,.30),
+            rgba(7,11,25,.97) 68%
+        );
+
+    backdrop-filter:
+        blur(14px);
+
+    opacity:0;
+
+    visibility:hidden;
+
+    transition:
+        opacity .35s ease,
+        visibility .35s ease;
+
+}
+
+.comic-loading-overlay.active{
+
+    opacity:1;
+
+    visibility:visible;
+
+}
+
+
+/* =========================================================
+   LOADING CARD
+========================================================= */
+
+.comic-loading-card{
+
+    width:
+        min(90%,520px);
+
+    padding:
+        42px 32px;
+
+    text-align:center;
+
+    border:
+        1px solid
+        rgba(255,255,255,.15);
+
+    border-radius:28px;
+
+    background:
+        rgba(20,25,50,.88);
+
+    box-shadow:
+        0 30px 100px
+        rgba(0,0,0,.45);
+
+    animation:
+        loadingCardIn .55s ease-out;
+
+}
+
+@keyframes loadingCardIn{
+
+    from{
+
+        opacity:0;
+
+        transform:
+            translateY(30px)
+            scale(.94);
+
+    }
+
+    to{
+
+        opacity:1;
+
+        transform:
+            translateY(0)
+            scale(1);
+
+    }
+
+}
+
+
+/* =========================================================
+   AI ICON
+========================================================= */
+
+.ai-loading-icon{
+
+    width:82px;
+
+    height:82px;
+
+    margin:
+        0 auto 24px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    border-radius:24px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #695cff,
+            #00bcd4
+        );
+
+    color:#fff;
+
+    font-size:38px;
+
+    box-shadow:
+        0 0 0 10px
+        rgba(105,92,255,.08),
+
+        0 0 45px
+        rgba(105,92,255,.35);
+
+    animation:
+        aiPulse 2s
+        ease-in-out infinite;
+
+}
+
+@keyframes aiPulse{
+
+    0%,100%{
+
+        transform:
+            scale(1)
+            rotate(0deg);
+
+        box-shadow:
+            0 0 0 10px
+            rgba(105,92,255,.08),
+
+            0 0 45px
+            rgba(105,92,255,.35);
+
+    }
+
+    50%{
+
+        transform:
+            scale(1.08)
+            rotate(5deg);
+
+        box-shadow:
+            0 0 0 18px
+            rgba(105,92,255,.03),
+
+            0 0 70px
+            rgba(0,188,212,.45);
+
+    }
+
+}
+
+
+/* =========================================================
+   LOADING TEXT
+========================================================= */
+
+.comic-loading-card h2{
+
+    margin:
+        0 0 10px;
+
+    color:#fff;
+
+    font-size:28px;
+
+    font-weight:800;
+
+}
+
+.comic-loading-card p{
+
+    margin:0;
+
+    color:
+        rgba(255,255,255,.72);
+
+    font-size:15px;
+
+    transition:
+        opacity .2s ease;
+
+}
+
+
+/* =========================================================
+   LOADING DOTS
+========================================================= */
+
+.loading-dots{
+
+    display:flex;
+
+    justify-content:center;
+
+    gap:8px;
+
+    margin-top:25px;
+
+}
+
+.loading-dots span{
+
+    width:9px;
+
+    height:9px;
+
+    border-radius:50%;
+
+    background:#8b7cff;
+
+    animation:
+        dotBounce 1.3s
+        infinite
+        ease-in-out;
+
+}
+
+.loading-dots span:nth-child(2){
+
+    animation-delay:
+        .15s;
+
+}
+
+.loading-dots span:nth-child(3){
+
+    animation-delay:
+        .30s;
+
+}
+
+@keyframes dotBounce{
+
+    0%,60%,100%{
+
+        transform:
+            translateY(0);
+
+        opacity:.4;
+
+    }
+
+    30%{
+
+        transform:
+            translateY(-8px);
+
+        opacity:1;
+
+    }
+
+}
+
+
+/* =========================================================
+   PROGRESS
+========================================================= */
+
+.ai-progress{
+
+    margin-top:22px;
+
+    color:
+        rgba(255,255,255,.55);
+
+    font-size:13px;
+
+    animation:
+        progressFade 2s
+        infinite;
+
+}
+
+@keyframes progressFade{
+
+    0%,100%{
+        opacity:.45;
+    }
+
+    50%{
+        opacity:1;
+    }
+
+}
+
+
+/* =========================================================
+   GENERATING STATE
+========================================================= */
+
+body.comic-generating{
+
+    overflow:hidden;
+
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media(max-width:850px){
+
+    .hi{
+
+        grid-template-columns:1fr;
+
+    }
+
+    .grid{
+
+        grid-template-columns:1fr;
+
+    }
+
+    .full{
+
+        grid-column:auto;
+
+    }
+
+    .features{
+
+        grid-template-columns:1fr;
+
+    }
+
+    h1{
+
+        letter-spacing:-2px;
+
+    }
+
+    .actions{
+
+        flex-direction:column;
+
+        align-items:stretch;
+
+    }
+
+    .generate-btn{
+
+        width:100%;
+
+    }
+
+}
+
+@media(max-width:600px){
+
+    .nav{
+
+        padding:
+            0 20px;
+
+    }
+
+    .nav > div:last-child{
+
+        display:none;
+
+    }
+
+    .hero{
+
+        padding:
+            50px 20px 35px;
+
+    }
+
+    .wrap{
+
+        padding:
+            25px 20px 55px;
+
+    }
+
+    .card{
+
+        padding:22px;
+
+        border-radius:20px;
+
+    }
+
+    .comic-loading-card{
+
+        padding:
+            34px 22px;
+
+        border-radius:22px;
+
+    }
+
+    .comic-loading-card h2{
+
+        font-size:23px;
+
+    }
+
+    .ai-loading-icon{
+
+        width:68px;
+
+        height:68px;
+
+        font-size:30px;
+
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<!-- ======================================================
+     NAVBAR
+====================================================== -->
+
+<nav class="nav">
+
+    <div class="logo">
+
+        <span class="mark">
+            ✦
+        </span>
+
+        ComicCraft
+
+    </div>
+
+    <div
+        style="
+        color:#667085;
+        font-size:13px;
+        "
+    >
+        AI Comic Story Creator • Gemini Models
+    </div>
+
+</nav>
+
+
+<!-- ======================================================
+     HERO
+====================================================== -->
+
+<section class="hero">
+
+    <div class="hi">
+
+        <div>
+
+            <span class="badge">
+                ✦ Generative AI • 5-panel workflow
+            </span>
+
+            <h1>
+
+                Your idea.<br>
+
+                <span
+                    style="
+                    background:
+                    linear-gradient(
+                        90deg,
+                        #6d4aff,
+                        #00a9c7
+                    );
+                    -webkit-background-clip:text;
+                    color:transparent;
+                    "
+                >
+                    Your comic.
+                </span>
+
+            </h1>
+
+            <p>
+                Transform a simple story idea into
+                a personalized comic with AI story
+                beats, narration, dialogue,
+                illustrations, live preview and
+                PDF export.
+            </p>
+
+        </div>
+
+
+        <!-- Comic Preview -->
+
+        <div class="book">
+
+            <div class="page">
+
+                <div class="cell"></div>
+
+                <div class="cell"></div>
+
+                <div class="cell big"></div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ======================================================
+     MAIN CONTENT
+====================================================== -->
+
+<main class="wrap">
+
+
+<section class="card">
+
+    <h2>
+        Create your comic
+    </h2>
+
+    <p class="sub">
+        Give the AI your creative direction.
+        ComicCraft builds the story panel by panel.
+    </p>
+
+
+    <form
+        method="post"
+        action="/generate"
+        id="comicForm"
+    >
+
+        <div class="grid">
+
+
+            <!-- STORY -->
+
+            <div class="full">
+
+                <label>
+                    STORY PROMPT
+                </label>
+
+                <textarea
+                    name="prompt"
+                    required
+                    placeholder="A brave explorer discovers a glowing library hidden inside an enchanted forest..."
+                ></textarea>
+
+            </div>
+
+
+            <!-- CHARACTER -->
+
+            <div>
+
+                <label>
+                    MAIN CHARACTER
+                </label>
+
+                <input
+                    name="character_name"
+                    value="Alex"
+                    required
+                >
+
+            </div>
+
+
+            <!-- SETTING -->
+
+            <div>
+
+                <label>
+                    SETTING
+                </label>
+
+                <select name="setting">
+
+                    <option>
+                        enchanted forest
+                    </option>
+
+                    <option>
+                        school campus
+                    </option>
+
+                    <option>
+                        futuristic city
+                    </option>
+
+                    <option>
+                        outer space
+                    </option>
+
+                    <option>
+                        village
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- TONE -->
+
+            <div>
+
+                <label>
+                    TONE
+                </label>
+
+                <select name="tone">
+
+                    <option>
+                        funny
+                    </option>
+
+                    <option>
+                        light-hearted
+                    </option>
+
+                    <option>
+                        dramatic
+                    </option>
+
+                    <option>
+                        adventurous
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- ART STYLE -->
+
+            <div>
+
+                <label>
+                    ART STYLE
+                </label>
+
+                <select name="art_style">
+
+                    <option>
+                        comic book
+                    </option>
+
+                    <option>
+                        anime
+                    </option>
+
+                    <option>
+                        cinematic
+                    </option>
+
+                    <option>
+                        pixel art
+                    </option>
+
+                    <option>
+                        storybook illustration
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- ACTION -->
+
+            <div class="full actions">
+
+                <span
+                    style="
+                    font-size:12px;
+                    color:#667085;
+                    "
+                >
+                    Gemini → story • Diffusion → art • FPDF → PDF
+                </span>
+
+
+                <button
+                    type="submit"
+                    class="generate-btn"
+                    id="generateButton"
+                >
+                    ✨ Generate Comic
+                </button>
+
+            </div>
+
+
+        </div>
+
+    </form>
+
+</section>
+
+
+<!-- ======================================================
+     FEATURES
+====================================================== -->
+
+<section class="features">
+
+
+    <div class="f">
+
+        🧠
+
+        <b>
+            AI Story Engine
+        </b>
+
+        <br>
+
+        <span>
+            Structured outline,
+            narration and dialogue.
+        </span>
+
+    </div>
+
+
+    <div class="f">
+
+        🎨
+
+        <b>
+            Comic Art
+        </b>
+
+        <br>
+
+        <span>
+            AI illustrations with
+            local demo fallback.
+        </span>
+
+    </div>
+
+
+    <div class="f">
+
+        📄
+
+        <b>
+            PDF Export
+        </b>
+
+        <br>
+
+        <span>
+            Preview and download
+            your comic.
+        </span>
+
+    </div>
+
+
+</section>
+
+
+</main>
+
+
+<!-- ======================================================
+     AI GENERATION OVERLAY
+====================================================== -->
+
+<div
+    class="comic-loading-overlay"
+    id="comicLoadingOverlay"
+>
+
+    <div class="comic-loading-card">
+
+
+        <div class="ai-loading-icon">
+
+            ✦
+
+        </div>
+
+
+        <h2>
+            Creating Your Comic...
+        </h2>
+
+
+        <p
+            id="aiLoadingMessage"
+        >
+            Gemini is writing your story
+        </p>
+
+
+        <div class="loading-dots">
+
+            <span></span>
+
+            <span></span>
+
+            <span></span>
+
+        </div>
+
+
+        <div
+            class="ai-progress"
+            id="aiProgress"
+        >
+            Preparing your comic panels...
+        </div>
+
+
+    </div>
+
+</div>
+
+
+<!-- ======================================================
+     JAVASCRIPT
+====================================================== -->
+
+<script>
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function(){
+
+        const form =
+            document.getElementById(
+                "comicForm"
+            );
+
+        const overlay =
+            document.getElementById(
+                "comicLoadingOverlay"
+            );
+
+        const button =
+            document.getElementById(
+                "generateButton"
+            );
+
+        const message =
+            document.getElementById(
+                "aiLoadingMessage"
+            );
+
+        const progress =
+            document.getElementById(
+                "aiProgress"
+            );
+
+
+        if(!form){
+
+            return;
+
+        }
+
+
+        /*
+         * AI generation messages
+         */
+
+        const messages = [
+
+            "Gemini is writing your story",
+
+            "Creating your 5-panel storyline",
+
+            "Building character moments",
+
+            "Generating comic illustrations",
+
+            "Designing your comic layout",
+
+            "Preparing your final comic..."
+
+        ];
+
+
+        const progressMessages = [
+
+            "Preparing your comic panels...",
+
+            "Building the story...",
+
+            "Creating cinematic scenes...",
+
+            "Adding narration and dialogue...",
+
+            "Assembling your comic...",
+
+            "Almost ready..."
+
+        ];
+
+
+        let messageIndex = 0;
+
+        let messageTimer = null;
+
+
+        /*
+         * Form submit
+         */
+
+        form.addEventListener(
+            "submit",
+            function(){
+
+                /*
+                 * Show loading screen
+                 */
+
+                document.body.classList.add(
+                    "comic-generating"
+                );
+
+                overlay.classList.add(
+                    "active"
+                );
+
+
+                /*
+                 * Disable button
+                 */
+
+                button.disabled = true;
+
+                button.innerHTML =
+                    "✨ Creating Comic...";
+
+
+                /*
+                 * Change messages
+                 */
+
+                messageTimer =
+                    setInterval(
+                        function(){
+
+                            messageIndex++;
+
+                            if(
+                                messageIndex >=
+                                messages.length
+                            ){
+
+                                messageIndex = 0;
+
+                            }
+
+
+                            /*
+                             * Fade message
+                             */
+
+                            message.style.opacity =
+                                "0";
+
+                            progress.style.opacity =
+                                "0";
+
+
+                            setTimeout(
+                                function(){
+
+                                    message.textContent =
+                                        messages[
+                                            messageIndex
+                                        ];
+
+                                    progress.textContent =
+                                        progressMessages[
+                                            messageIndex
+                                        ];
+
+                                    message.style.opacity =
+                                        "1";
+
+                                    progress.style.opacity =
+                                        "1";
+
+                                },
+                                180
+                            );
+
+
+                        },
+                        2200
+                    );
+
+            }
+        );
+
+    }
+
+);
+
+</script>
+
+
+</body>
+
+</html>

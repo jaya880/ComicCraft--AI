@@ -7,3 +7,4 @@ python-dotenv
 fpdf2
 Pillow
 requests
+huggingface_hub

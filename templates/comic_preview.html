@@ -1,5 +1,813 @@
-<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ComicCraft Preview</title>
-<style>body{margin:0;font-family:Inter,system-ui,Arial;background:#f4f6fb;color:#101828}.top{background:#fff;border-bottom:1px solid #e4e7ec;padding:18px 5vw;display:flex;justify-content:space-between;align-items:center}.btn{background:#6d4aff;color:#fff;text-decoration:none;padding:12px 17px;border-radius:11px;font-weight:800}.wrap{max-width:1050px;margin:auto;padding:35px 18px}.panel{background:#fff;border:1px solid #e4e7ec;border-radius:23px;padding:20px;margin:20px 0;box-shadow:0 12px 35px #1018280b}.num{display:inline-block;color:#5b3bd1;background:#f1edff;padding:7px 10px;border-radius:999px;font-size:12px;font-weight:900}.art{width:100%;max-height:600px;object-fit:contain;border-radius:15px;background:#eef1f5}.copy{line-height:1.6}.bubble{background:#f6f7fb;border-left:4px solid #6d4aff;padding:12px 14px;margin-top:10px}.dialogue{background:#fff4c8;border:1px solid #f0d16b;padding:12px 14px;border-radius:14px;font-weight:800;margin-top:10px}</style></head><body>
-<header class="top"><b>✦ ComicCraft</b><a class="btn" href="{{ pdf_path }}" download>⬇ Download PDF</a></header><main class="wrap"><h1>Your Comic Preview</h1><p style="color:#667085">Five panels • story • dialogue • illustrations</p>
-{% for p in layout %}<article class="panel"><span class="num">PANEL {{p.panel}}</span><h2>{{p.title}}</h2>{% if p.image %}<img class="art" src="{{p.image}}" alt="Panel {{p.panel}}">{% endif %}<div class="copy"><div class="bubble"><b>Scene:</b> {{p.scene_description}}</div><p><b>Caption:</b> {{p.caption}}</p><p><b>Narration:</b> {{p.narration}}</p>{% if p.dialogue %}<div class="dialogue">💬 {{p.dialogue}}</div>{% endif %}</div></article>{% endfor %}
-<p style="text-align:center"><a class="btn" href="{{pdf_path}}" download>📄 Export / Download Comic PDF</a></p></main></body></html>
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ComicCraft Preview</title>
+
+<style>
+
+/* =========================
+   BASE
+========================= */
+
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    font-family:Inter,system-ui,Arial,sans-serif;
+    background:
+        radial-gradient(circle at 10% 10%,#eee9ff 0,transparent 30%),
+        radial-gradient(circle at 90% 20%,#e7f0ff 0,transparent 28%),
+        #f4f6fb;
+    color:#101828;
+    overflow-x:hidden;
+}
+
+/* =========================
+   TOP BAR
+========================= */
+
+.top{
+    background:rgba(255,255,255,.88);
+    backdrop-filter:blur(18px);
+    -webkit-backdrop-filter:blur(18px);
+    border-bottom:1px solid #e4e7ec;
+    padding:18px 5vw;
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+
+    position:sticky;
+    top:0;
+    z-index:100;
+
+    animation:topDown .7s ease both;
+}
+
+.brand{
+    font-size:20px;
+    font-weight:900;
+    letter-spacing:-.5px;
+}
+
+.brand span{
+    display:inline-block;
+    animation:logoPulse 2s ease-in-out infinite;
+}
+
+.btn{
+    position:relative;
+    overflow:hidden;
+
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:7px;
+
+    background:linear-gradient(135deg,#6d4aff,#8b5cf6);
+    color:#fff;
+    text-decoration:none;
+
+    padding:12px 18px;
+    border-radius:12px;
+
+    font-weight:800;
+
+    box-shadow:
+        0 8px 22px rgba(109,74,255,.22);
+
+    transition:
+        transform .25s ease,
+        box-shadow .25s ease;
+}
+
+.btn::before{
+    content:"";
+    position:absolute;
+    top:0;
+    left:-120%;
+    width:80%;
+    height:100%;
+
+    background:linear-gradient(
+        100deg,
+        transparent,
+        rgba(255,255,255,.45),
+        transparent
+    );
+
+    transform:skewX(-20deg);
+    transition:left .7s ease;
+}
+
+.btn:hover::before{
+    left:140%;
+}
+
+.btn:hover{
+    transform:translateY(-3px) scale(1.02);
+    box-shadow:
+        0 14px 30px rgba(109,74,255,.32);
+}
+
+.btn:active{
+    transform:scale(.97);
+}
+
+/* =========================
+   MAIN
+========================= */
+
+.wrap{
+    max-width:1050px;
+    margin:auto;
+    padding:55px 18px 70px;
+}
+
+.hero{
+    text-align:center;
+    margin-bottom:35px;
+
+    animation:heroIn .8s ease both;
+}
+
+.hero h1{
+    margin:0;
+    font-size:clamp(32px,5vw,52px);
+    letter-spacing:-1.8px;
+
+    background:linear-gradient(
+        135deg,
+        #101828,
+        #6d4aff
+    );
+
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+}
+
+.hero p{
+    margin:12px 0 0;
+    color:#667085;
+    font-size:16px;
+}
+
+/* =========================
+   PANEL
+========================= */
+
+.panel{
+    position:relative;
+
+    background:rgba(255,255,255,.92);
+    border:1px solid rgba(228,231,236,.95);
+
+    border-radius:24px;
+    padding:22px;
+    margin:25px 0;
+
+    box-shadow:
+        0 18px 50px rgba(16,24,40,.08);
+
+    opacity:0;
+    transform:translateY(55px) scale(.97);
+
+    transition:
+        opacity .8s ease,
+        transform .8s cubic-bezier(.2,.8,.2,1),
+        box-shadow .3s ease;
+
+    overflow:hidden;
+}
+
+.panel.visible{
+    opacity:1;
+    transform:translateY(0) scale(1);
+}
+
+.panel:hover{
+    transform:translateY(-5px);
+    box-shadow:
+        0 25px 60px rgba(16,24,40,.13);
+}
+
+/* glowing line */
+
+.panel::before{
+    content:"";
+    position:absolute;
+
+    top:0;
+    left:0;
+
+    width:100%;
+    height:3px;
+
+    background:linear-gradient(
+        90deg,
+        #6d4aff,
+        #a78bfa,
+        #60a5fa,
+        #6d4aff
+    );
+
+    background-size:200% 100%;
+
+    animation:gradientMove 3s linear infinite;
+}
+
+/* =========================
+   PANEL HEADER
+========================= */
+
+.panel-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:15px;
+
+    margin-bottom:12px;
+}
+
+.num{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+
+    color:#5b3bd1;
+    background:#f1edff;
+
+    padding:7px 11px;
+    border-radius:999px;
+
+    font-size:12px;
+    font-weight:900;
+
+    box-shadow:0 5px 15px rgba(109,74,255,.08);
+}
+
+.panel h2{
+    margin:8px 0 18px;
+
+    font-size:28px;
+    letter-spacing:-.7px;
+
+    animation:titleSlide .7s ease both;
+}
+
+/* =========================
+   IMAGE
+========================= */
+
+.art-wrap{
+    position:relative;
+    overflow:hidden;
+    border-radius:18px;
+
+    background:#eef1f5;
+
+    box-shadow:
+        inset 0 0 0 1px rgba(16,24,40,.05);
+
+    margin-bottom:18px;
+}
+
+.art{
+    display:block;
+
+    width:100%;
+    max-height:600px;
+
+    object-fit:contain;
+
+    border-radius:18px;
+
+    transform:scale(1.015);
+
+    transition:
+        transform .7s cubic-bezier(.2,.8,.2,1),
+        filter .5s ease;
+}
+
+.panel:hover .art{
+    transform:scale(1.035);
+    filter:saturate(1.05);
+}
+
+/* image shine */
+
+.art-wrap::after{
+    content:"";
+
+    position:absolute;
+    top:0;
+    left:-120%;
+
+    width:70%;
+    height:100%;
+
+    background:linear-gradient(
+        100deg,
+        transparent,
+        rgba(255,255,255,.20),
+        transparent
+    );
+
+    transform:skewX(-20deg);
+    pointer-events:none;
+}
+
+.panel.visible .art-wrap::after{
+    animation:imageShine 1.4s ease .45s;
+}
+
+/* =========================
+   COPY
+========================= */
+
+.copy{
+    line-height:1.65;
+}
+
+.copy p{
+    color:#475467;
+    margin:13px 0;
+}
+
+/* =========================
+   SCENE CARD
+========================= */
+
+.bubble{
+    background:
+        linear-gradient(
+            135deg,
+            #f8f7ff,
+            #f4f2ff
+        );
+
+    border-left:4px solid #6d4aff;
+
+    padding:14px 16px;
+    margin-top:10px;
+
+    border-radius:0 14px 14px 0;
+
+    box-shadow:0 7px 20px rgba(109,74,255,.06);
+
+    opacity:0;
+    transform:translateX(-18px);
+}
+
+.panel.visible .bubble{
+    animation:contentLeft .7s ease .25s forwards;
+}
+
+/* =========================
+   DIALOGUE
+========================= */
+
+.dialogue{
+    position:relative;
+
+    background:
+        linear-gradient(
+            135deg,
+            #fff8d9,
+            #fff3bd
+        );
+
+    border:1px solid #f0d16b;
+
+    padding:14px 17px;
+
+    border-radius:15px;
+
+    font-weight:800;
+
+    margin-top:14px;
+
+    box-shadow:
+        0 8px 22px rgba(240,209,107,.15);
+
+    opacity:0;
+    transform:scale(.92);
+}
+
+.panel.visible .dialogue{
+    animation:dialoguePop .6s cubic-bezier(.2,.8,.2,1) .55s forwards;
+}
+
+.dialogue::before{
+    content:"";
+    position:absolute;
+
+    left:18px;
+    top:-8px;
+
+    width:15px;
+    height:15px;
+
+    background:#fff8d9;
+
+    border-left:1px solid #f0d16b;
+    border-top:1px solid #f0d16b;
+
+    transform:rotate(45deg);
+}
+
+/* =========================
+   EXPORT AREA
+========================= */
+
+.export{
+    text-align:center;
+
+    padding:30px 0 10px;
+
+    opacity:0;
+    transform:translateY(25px);
+
+    animation:exportIn .8s ease 1.2s forwards;
+}
+
+.export p{
+    color:#667085;
+    margin-bottom:14px;
+}
+
+.export .btn{
+    font-size:15px;
+    padding:14px 22px;
+}
+
+/* =========================
+   ANIMATIONS
+========================= */
+
+@keyframes topDown{
+    from{
+        opacity:0;
+        transform:translateY(-20px);
+    }
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+
+@keyframes heroIn{
+    from{
+        opacity:0;
+        transform:translateY(25px);
+    }
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+
+@keyframes logoPulse{
+    0%,100%{
+        transform:rotate(0) scale(1);
+    }
+    50%{
+        transform:rotate(8deg) scale(1.15);
+    }
+}
+
+@keyframes gradientMove{
+    0%{
+        background-position:0% 50%;
+    }
+    100%{
+        background-position:200% 50%;
+    }
+}
+
+@keyframes titleSlide{
+    from{
+        opacity:0;
+        transform:translateX(-15px);
+    }
+    to{
+        opacity:1;
+        transform:translateX(0);
+    }
+}
+
+@keyframes imageShine{
+    0%{
+        left:-120%;
+    }
+    100%{
+        left:140%;
+    }
+}
+
+@keyframes contentLeft{
+    from{
+        opacity:0;
+        transform:translateX(-18px);
+    }
+    to{
+        opacity:1;
+        transform:translateX(0);
+    }
+}
+
+@keyframes dialoguePop{
+    0%{
+        opacity:0;
+        transform:scale(.92);
+    }
+    70%{
+        opacity:1;
+        transform:scale(1.03);
+    }
+    100%{
+        opacity:1;
+        transform:scale(1);
+    }
+}
+
+@keyframes exportIn{
+    from{
+        opacity:0;
+        transform:translateY(25px);
+    }
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media(max-width:700px){
+
+    .top{
+        padding:15px 18px;
+    }
+
+    .brand{
+        font-size:17px;
+    }
+
+    .top .btn{
+        padding:10px 12px;
+        font-size:12px;
+    }
+
+    .wrap{
+        padding:35px 13px 55px;
+    }
+
+    .hero h1{
+        font-size:34px;
+    }
+
+    .hero p{
+        font-size:14px;
+    }
+
+    .panel{
+        padding:15px;
+        border-radius:19px;
+        margin:18px 0;
+    }
+
+    .panel h2{
+        font-size:23px;
+    }
+
+    .art{
+        max-height:430px;
+    }
+
+    .bubble,
+    .dialogue{
+        font-size:14px;
+    }
+
+    .export .btn{
+        width:100%;
+    }
+}
+
+/* accessibility */
+
+@media(prefers-reduced-motion:reduce){
+
+    *,
+    *::before,
+    *::after{
+        animation-duration:.01ms !important;
+        animation-iteration-count:1 !important;
+        transition-duration:.01ms !important;
+    }
+
+}
+
+</style>
+</head>
+
+<body>
+
+<header class="top">
+
+    <div class="brand">
+        <span>✦</span> ComicCraft
+    </div>
+
+    <a class="btn" href="{{ pdf_path }}" download>
+        ⬇ Download PDF
+    </a>
+
+</header>
+
+
+<main class="wrap">
+
+    <section class="hero">
+
+        <h1>Your Comic Preview</h1>
+
+        <p>
+            Five panels • story • dialogue • illustrations
+        </p>
+
+    </section>
+
+
+    {% for p in layout %}
+
+    <article class="panel">
+
+        <div class="panel-head">
+
+            <span class="num">
+                PANEL {{p.panel}}
+            </span>
+
+        </div>
+
+
+        <h2>
+            {{p.title}}
+        </h2>
+
+
+        {% if p.image %}
+
+        <div class="art-wrap">
+
+            <img
+                class="art"
+                src="{{p.image}}"
+                alt="Panel {{p.panel}}"
+                loading="lazy"
+            >
+
+        </div>
+
+        {% endif %}
+
+
+        <div class="copy">
+
+            <div class="bubble">
+
+                <b>Scene:</b>
+                {{p.scene_description}}
+
+            </div>
+
+
+            <p>
+                <b>Caption:</b>
+                {{p.caption}}
+            </p>
+
+
+            <p>
+                <b>Narration:</b>
+                {{p.narration}}
+            </p>
+
+
+            {% if p.dialogue %}
+
+            <div class="dialogue">
+
+                💬 {{p.dialogue}}
+
+            </div>
+
+            {% endif %}
+
+        </div>
+
+    </article>
+
+    {% endfor %}
+
+
+    <div class="export">
+
+        <p>
+            ✨ Your comic is ready!
+        </p>
+
+        <a
+            class="btn"
+            href="{{pdf_path}}"
+            download
+        >
+            📄 Export / Download Comic PDF
+        </a>
+
+    </div>
+
+</main>
+
+
+<script>
+
+/* =====================================
+   SCROLL REVEAL
+===================================== */
+
+const panels = document.querySelectorAll(".panel");
+
+const observer = new IntersectionObserver(
+
+    (entries) => {
+
+        entries.forEach((entry) => {
+
+            if(entry.isIntersecting){
+
+                entry.target.classList.add("visible");
+
+                observer.unobserve(entry.target);
+
+            }
+
+        });
+
+    },
+
+    {
+        threshold:0.12
+    }
+
+);
+
+
+panels.forEach((panel,index) => {
+
+    /*
+       Small delay between panels
+       creates a cinematic sequence.
+    */
+
+    panel.style.transitionDelay =
+        `${index * 0.08}s`;
+
+    observer.observe(panel);
+
+});
+
+
+/* =====================================
+   PDF BUTTON CLICK FEEDBACK
+===================================== */
+
+document.querySelectorAll(".btn").forEach((button) => {
+
+    button.addEventListener("click", () => {
+
+        button.style.transform = "scale(.96)";
+
+        setTimeout(() => {
+
+            button.style.transform = "";
+
+        },180);
+
+    });
+
+});
+
+</script>
+
+</body>
+</html>
